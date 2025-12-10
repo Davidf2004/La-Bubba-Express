@@ -59,7 +59,6 @@ fun ProductDetailScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Imagen grande del producto
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -82,8 +81,6 @@ fun ProductDetailScreen(
                     }
                 }
             }
-
-            // Card de información
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,7 +94,6 @@ fun ProductDetailScreen(
                 Column(
                     modifier = Modifier.padding(24.dp)
                 ) {
-                    // Nombre y precio
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -127,7 +123,6 @@ fun ProductDetailScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Categoría
                     Surface(
                         color = CoffeePrimary.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(8.dp)
@@ -144,8 +139,6 @@ fun ProductDetailScreen(
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    // Descripción
                     Text(
                         text = "Descripción",
                         fontSize = 16.sp,
@@ -165,8 +158,6 @@ fun ProductDetailScreen(
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
-
-                    // Campo de personalización
                     Text(
                         text = "Personaliza tu bebida",
                         fontSize = 16.sp,
@@ -198,7 +189,6 @@ fun ProductDetailScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Botón agregar
                     Button(
                         onClick = { onAddToCart(customization) },
                         modifier = Modifier
