@@ -30,3 +30,51 @@ class OrderViewModel @Inject constructor(
             is OrderEvent.ClearCart -> clearCart()
         }
     }
+
+    private fun addToCart(product: Product) {
+        _state.update { currentState ->
+            val existingItem = currentState.cartItems.find {
+                it.product.id == product.id
+            }
+
+            val updatedItems = if (existingItem != null) {
+                currentState.cartItems.map { item ->
+                    if (item == existingItem) {
+                        item.copy(cantidad = item.cantidad + 1)
+                    } else {
+                        item
+                    }
+                }
+            } else {
+                currentState.cartItems + CartItem(
+                    product = product,
+                    cantidad = 1
+                )
+            }
+
+            currentState.copy(cartItems = updatedItems)
+        }
+    }
+
+    private fun removeFromCart(item: CartItem) {
+        _state.update { currentState ->
+            currentState.copy(
+                cartItems = currentState.cartItems.filter { it != item }
+            )
+        }
+    }
+
+    private fun updateQuantity(item: CartItem, newQuantity: Int) {
+        if (newQuantity <= 0) {
+            removeFromCart(item)
+        } else {
+            _state.update { currentState ->
+                currentState.copy(
+                    cartItems = currentState.cartItems.map {
+                        if (it == item) it.copy(cantidad = newQuantity) else it
+                    }
+                )
+            }
+        }
+    }
+}
