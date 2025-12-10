@@ -1,5 +1,8 @@
 package com.bubba.express.screens.home
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,14 +17,19 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.LocalCafe
+import androidx.compose.material.icons.outlined.Fastfood
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,6 +48,21 @@ fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var showProfileMenu by remember { mutableStateOf(false) }
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
+
+
+    val categories = remember(state.products) {
+        state.products.map { it.categoria }.distinct()
+    }
+
+
+    val filteredProducts = remember(state.products, selectedCategory) {
+        if (selectedCategory == null) {
+            state.products
+        } else {
+            state.products.filter { it.categoria == selectedCategory }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -49,14 +72,16 @@ fun HomeScreen(
                         Text(
                             "La Bubba Express",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp,
-                            color = CoffeePrimary
+                            fontSize = 24.sp,
+                            color = CoffeePrimary,
+                            letterSpacing = 0.5.sp
                         )
                         Text(
                             "Café de especialidad",
-                            fontSize = 12.sp,
+                            fontSize = 13.sp,
                             color = GrayMedium,
-                            fontWeight = FontWeight.Normal
+                            fontWeight = FontWeight.Medium,
+                            letterSpacing = 0.3.sp
                         )
                     }
                 },
@@ -64,137 +89,250 @@ fun HomeScreen(
                     containerColor = WhitePure
                 ),
                 actions = {
-                    // Carrito
-                    IconButton(onClick = onCartClick) {
+
+                    IconButton(
+                        onClick = onCartClick,
+                        modifier = Modifier.padding(end = 4.dp)
+                    ) {
                         BadgedBox(
                             badge = {
                                 if (state.cartItemCount > 0) {
                                     Badge(
-                                        containerColor = CoffeePrimary
+                                        containerColor = CoffeePrimary,
+                                        modifier = Modifier
+                                            .offset(x = (-4).dp, y = 4.dp)
+                                            .animateContentSize()
                                     ) {
                                         Text(
                                             "${state.cartItemCount}",
                                             color = WhitePure,
-                                            fontSize = 10.sp,
+                                            fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
                                 }
                             }
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.ShoppingCart,
-                                contentDescription = "Carrito",
-                                tint = CoffeePrimary
-                            )
+                            Surface(
+                                shape = CircleShape,
+                                color = CoffeePrimary.copy(alpha = 0.15f),
+                                modifier = Modifier.size(42.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ShoppingCart,
+                                    contentDescription = "Carrito",
+                                    tint = CoffeePrimary,
+                                    modifier = Modifier.padding(9.dp)
+                                )
+                            }
                         }
                     }
 
-                    // Perfil
-                    Box {
+                    // Perfil mejorado
+                    Box(modifier = Modifier.padding(end = 8.dp)) {
                         IconButton(onClick = { showProfileMenu = true }) {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle,
-                                contentDescription = "Perfil",
-                                tint = CoffeePrimary,
-                                modifier = Modifier.size(32.dp)
-                            )
+                            Surface(
+                                shape = CircleShape,
+                                color = CoffeePrimary,
+                                modifier = Modifier.size(42.dp),
+                                shadowElevation = 2.dp
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AccountCircle,
+                                    contentDescription = "Perfil",
+                                    tint = WhitePure,
+                                    modifier = Modifier.padding(7.dp)
+                                )
+                            }
                         }
 
                         DropdownMenu(
                             expanded = showProfileMenu,
                             onDismissRequest = { showProfileMenu = false },
                             modifier = Modifier
-                                .background(WhitePure)
-                                .width(220.dp)
+                                .background(WhitePure, RoundedCornerShape(16.dp))
+                                .width(250.dp)
                         ) {
-                            // Nombre de usuario
+                            // Header mejorado con más estilo
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp)
+                                    .background(
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(
+                                                CoffeePrimary.copy(alpha = 0.2f),
+                                                CoffeePrimary.copy(alpha = 0.05f)
+                                            )
+                                        )
+                                    )
+                                    .padding(20.dp)
                             ) {
-                                Text(
-                                    text = state.currentUser?.nombre ?: "Usuario",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = Black
-                                )
-                                Text(
-                                    text = state.currentUser?.email ?: "",
-                                    fontSize = 12.sp,
-                                    color = GrayMedium
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = CoffeePrimary,
+                                        modifier = Modifier.size(48.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text(
+                                                text = state.currentUser?.nombre?.firstOrNull()?.uppercase() ?: "U",
+                                                color = WhitePure,
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                    Column {
+                                        Text(
+                                            text = state.currentUser?.nombre ?: "Usuario",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp,
+                                            color = Black,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = state.currentUser?.email ?: "",
+                                            fontSize = 12.sp,
+                                            color = GrayMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.padding(top = 2.dp)
+                                        )
+                                    }
+                                }
                             }
 
-                            Divider(color = GrayLight)
+                            Divider(color = GrayLight, thickness = 1.dp)
 
-                            // Mi perfil
+                            // Opciones del menú con más detalle
                             DropdownMenuItem(
                                 text = {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                                     ) {
-                                        Icon(
-                                            Icons.Outlined.Person,
-                                            contentDescription = null,
-                                            tint = CoffeePrimary
-                                        )
-                                        Text("Mi Perfil")
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = CoffeePrimary.copy(alpha = 0.12f),
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Outlined.Person,
+                                                contentDescription = null,
+                                                tint = CoffeePrimary,
+                                                modifier = Modifier.padding(10.dp)
+                                            )
+                                        }
+                                        Column {
+                                            Text(
+                                                "Mi Perfil",
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Black
+                                            )
+                                            Text(
+                                                "Ver información personal",
+                                                fontSize = 11.sp,
+                                                color = GrayMedium
+                                            )
+                                        }
                                     }
                                 },
                                 onClick = {
                                     showProfileMenu = false
                                     onProfileClick()
-                                }
+                                },
+                                modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp)
                             )
 
-                            // Historial de pedidos
                             DropdownMenuItem(
                                 text = {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                                     ) {
-                                        Icon(
-                                            Icons.Outlined.History,
-                                            contentDescription = null,
-                                            tint = CoffeePrimary
-                                        )
-                                        Text("Historial de Pedidos")
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = CoffeePrimary.copy(alpha = 0.12f),
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Outlined.History,
+                                                contentDescription = null,
+                                                tint = CoffeePrimary,
+                                                modifier = Modifier.padding(10.dp)
+                                            )
+                                        }
+                                        Column {
+                                            Text(
+                                                "Mis Pedidos",
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Black
+                                            )
+                                            Text(
+                                                "Historial de compras",
+                                                fontSize = 11.sp,
+                                                color = GrayMedium
+                                            )
+                                        }
                                     }
                                 },
                                 onClick = {
                                     showProfileMenu = false
                                     onHistoryClick()
-                                }
+                                },
+                                modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp)
                             )
 
-                            Divider(color = GrayLight)
+                            Divider(
+                                color = GrayLight,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
 
-                            // Cerrar sesión
                             DropdownMenuItem(
                                 text = {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                                     ) {
-                                        Icon(
-                                            Icons.Outlined.Logout,
-                                            contentDescription = null,
-                                            tint = ErrorRed
-                                        )
-                                        Text(
-                                            "Cerrar Sesión",
-                                            color = ErrorRed
-                                        )
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = ErrorRed.copy(alpha = 0.12f),
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Outlined.Logout,
+                                                contentDescription = null,
+                                                tint = ErrorRed,
+                                                modifier = Modifier.padding(10.dp)
+                                            )
+                                        }
+                                        Column {
+                                            Text(
+                                                "Cerrar Sesión",
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = ErrorRed
+                                            )
+                                            Text(
+                                                "Salir de la cuenta",
+                                                fontSize = 11.sp,
+                                                color = ErrorRed.copy(alpha = 0.7f)
+                                            )
+                                        }
                                     }
                                 },
                                 onClick = {
                                     showProfileMenu = false
                                     onLogoutClick()
-                                }
+                                },
+                                modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp)
                             )
                         }
                     }
@@ -210,29 +348,74 @@ fun HomeScreen(
         ) {
             when {
                 state.isLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = CoffeePrimary
-                    )
-                }
-                state.error != null -> {
                     Column(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = "Error: ${state.error}",
-                            color = ErrorRed,
-                            textAlign = TextAlign.Center
+                        CircularProgressIndicator(
+                            color = CoffeePrimary,
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(48.dp)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Cargando productos...",
+                            color = GrayMedium,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+                state.error != null -> {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = ErrorRed.copy(alpha = 0.1f),
+                            modifier = Modifier.size(100.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(text = "😔", fontSize = 56.sp)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text(
+                            text = "Oops!",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Black
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Error al cargar productos",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = GrayDark
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = state.error ?: "",
+                            color = ErrorRed,
+                            textAlign = TextAlign.Center,
+                            fontSize = 13.sp
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
                         Button(
                             onClick = { viewModel.onEvent(HomeEvent.LoadProducts) },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = CoffeePrimary
-                            )
+                            ),
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 32.dp, vertical = 14.dp)
                         ) {
-                            Text("Reintentar")
+                            Text(
+                                "Reintentar",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
                         }
                     }
                 }
@@ -240,63 +423,179 @@ fun HomeScreen(
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        // Banner promocional
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
-                            shape = RoundedCornerShape(16.dp),
+                                .padding(16.dp)
+                                .shadow(8.dp, RoundedCornerShape(24.dp)),
+                            shape = RoundedCornerShape(24.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = CoffeePrimary
+                                containerColor = Color.Transparent
                             )
                         ) {
-                            Row(
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(20.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .background(
+                                        brush = Brush.linearGradient(
+                                            colors = listOf(
+                                                CoffeePrimary,
+                                                CoffeeSecondary,
+                                                CoffeePrimary.copy(alpha = 0.8f)
+                                            )
+                                        )
+                                    )
                             ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        "¡Bienvenido ${state.currentUser?.nombre?.split(" ")?.firstOrNull() ?: ""}!",
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = WhitePure
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        "Descubre nuestras especialidades",
-                                        fontSize = 14.sp,
-                                        color = WhitePure.copy(alpha = 0.9f)
-                                    )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(28.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            "¡Hola, ${state.currentUser?.nombre?.split(" ")?.firstOrNull() ?: "de nuevo"}!",
+                                            fontSize = 28.sp,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = WhitePure,
+                                            letterSpacing = 0.5.sp
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            "Descubre nuestros mejores cafés",
+                                            fontSize = 15.sp,
+                                            color = WhitePure.copy(alpha = 0.95f),
+                                            lineHeight = 20.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Spacer(modifier = Modifier.height(4.dp))
+
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .size(80.dp)
+                                            .clip(CircleShape)
+                                            .background(WhitePure.copy(alpha = 0.25f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("☕", fontSize = 44.sp)
+                                    }
                                 }
-                                Text(
-                                    "☕",
-                                    fontSize = 48.sp
-                                )
                             }
                         }
 
-                        // Categorías
-                        Text(
-                            "Nuestro Menú",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Black,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
+                        // Filtros de categorías
+                        if (categories.isNotEmpty()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                // Botón "Todos"
+                                FilterChip(
+                                    selected = selectedCategory == null,
+                                    onClick = { selectedCategory = null },
+                                    label = {
+                                        Text(
+                                            "Todos",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Outlined.Fastfood,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = CoffeePrimary,
+                                        selectedLabelColor = WhitePure,
+                                        selectedLeadingIconColor = WhitePure
+                                    )
+                                )
+
+                                categories.take(3).forEach { category ->
+                                    FilterChip(
+                                        selected = selectedCategory == category,
+                                        onClick = {
+                                            selectedCategory = if (selectedCategory == category) null else category
+                                        },
+                                        label = {
+                                            category?.let {
+                                                Text(
+                                                    it,
+                                                    fontSize = 13.sp,
+                                                    fontWeight = FontWeight.Medium
+                                                )
+                                            }
+                                        },
+                                        colors = FilterChipDefaults.filterChipColors(
+                                            selectedContainerColor = CoffeePrimary,
+                                            selectedLabelColor = WhitePure
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    "Nuestro Menú",
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Black,
+                                    letterSpacing = 0.3.sp
+                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                ) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = CoffeePrimary.copy(alpha = 0.2f)
+                                    ) {
+                                        Text(
+                                            "${filteredProducts.size}",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = CoffeePrimary,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                        )
+                                    }
+                                    Text(
+                                        "productos ${if (selectedCategory != null) "en $selectedCategory" else "disponibles"}",
+                                        fontSize = 13.sp,
+                                        color = GrayMedium,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
 
                         // Grid de productos
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = PaddingValues(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            items(state.products) { product ->
-                                ProductCard(
+                            items(filteredProducts) { product ->
+                                DetailedProductCard(
                                     product = product,
                                     onClick = { onProductClick(product.id) }
                                 )
@@ -310,76 +609,196 @@ fun HomeScreen(
 }
 
 @Composable
-fun ProductCard(
+fun DetailedProductCard(
     product: Product,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+            .clickable(onClick = onClick)
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            ),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = WhitePure
         ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 8.dp
+        )
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Emoji basado en categoría
-            Box(
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
                 modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(CreamBackground),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                product.categoria?.let {
-                    Text(
-                        text = getEmojiForCategory(it),
-                        fontSize = 56.sp
-                    )
+                // Badge de disponibilidad mejorado
+                if (!product.disponible) {
+                    Surface(
+                        color = ErrorRed,
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shadowElevation = 2.dp
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(vertical = 6.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "⚠️",
+                                fontSize = 12.sp
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "AGOTADO",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = WhitePure,
+                                letterSpacing = 1.sp
+                            )
+                        }
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                // Imagen del producto con decoración
+                Box(
+                    modifier = Modifier.size(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Círculo de fondo con gradiente
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .background(
+                                brush = Brush.radialGradient(
+                                    colors = listOf(
+                                        CoffeePrimary.copy(alpha = 0.15f),
+                                        CreamBackground.copy(alpha = 0.8f),
+                                        WhitePure
+                                    )
+                                )
+                            )
+                    )
+                    // Emoji del producto
+                    product.categoria?.let {
+                        Text(
+                            text = getEmojiForCategory(it),
+                            fontSize = 64.sp
+                        )
+                    }
+                }
 
-            Text(
-                text = product.nombre,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp,
-                textAlign = TextAlign.Center,
-                color = Black,
-                maxLines = 2,
-                minLines = 2
-            )
+                Spacer(modifier = Modifier.height(14.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
+                // Badge de categoría mejorado
+                Surface(
+                    color = CoffeePrimary.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.shadow(1.dp, RoundedCornerShape(8.dp))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Outlined.LocalCafe,
+                            contentDescription = null,
+                            tint = CoffeePrimary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        product.categoria?.let {
+                            Text(
+                                text = it.uppercase(),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = CoffeePrimary,
+                                letterSpacing = 0.8.sp
+                            )
+                        }
+                    }
+                }
 
-            Surface(
-                color = CoffeePrimary,
-                shape = RoundedCornerShape(8.dp)
-            ) {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Nombre del producto
                 Text(
-                    text = "$${String.format("%.2f", product.precio)}",
+                    text = product.nombre,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = WhitePure,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    textAlign = TextAlign.Center,
+                    color = Black,
+                    maxLines = 2,
+                    minLines = 2,
+                    lineHeight = 20.sp,
+                    modifier = Modifier.height(40.dp)
                 )
-            }
 
-            if (!product.disponible) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "No disponible",
-                    fontSize = 11.sp,
-                    color = ErrorRed
-                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Precio mejorado con sombra y efecto
+                Surface(
+                    color = CoffeePrimary,
+                    shape = RoundedCornerShape(12.dp),
+                    shadowElevation = 4.dp,
+                    modifier = Modifier.fillMaxWidth(0.85f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "$",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = WhitePure.copy(alpha = 0.9f)
+                        )
+                        Text(
+                            text = String.format("%.2f", product.precio),
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 20.sp,
+                            color = WhitePure,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Indicador de disponibilidad sutil
+                if (product.disponible) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(SuccessGreen)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Disponible ahora",
+                            fontSize = 11.sp,
+                            color = SuccessGreen,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
         }
     }
@@ -393,6 +812,8 @@ private fun getEmojiForCategory(categoria: String): String {
         "pasteleria", "pastry" -> "🥐"
         "sandwich" -> "🥪"
         "bebida", "drink" -> "🥤"
-        else -> "☕"
+        "helado", "ice cream" -> "🍦"
+        "jugo", "juice" -> "🧃"
+        else -> "🥐"
     }
 }
