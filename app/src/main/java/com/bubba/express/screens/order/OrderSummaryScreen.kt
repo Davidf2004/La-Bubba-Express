@@ -61,6 +61,75 @@ fun OrderSummaryScreen(
         },
         containerColor = CreamBackground
     ) { padding ->
-        {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            when {
+                state.isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = CoffeePrimary
+                    )
+                }
+                state.cartItems.isEmpty() -> {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(CircleShape)
+                                .background(WhitePure),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "🛒",
+                                fontSize = 64.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text(
+                            text = "Tu carrito está vacío",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = GrayDark
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Agrega productos para comenzar",
+                            fontSize = 14.sp,
+                            color = GrayMedium
+                        )
+                    }
+                }
+                else -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(state.cartItems) { item ->
+                                OrderItemCard(
+                                    cartItem = item,
+                                    onUpdateQuantity = { newQuantity ->
+                                        viewModel.onEvent(OrderEvent.UpdateQuantity(item, newQuantity))
+                                    },
+                                    onRemove = {
+                                        viewModel.onEvent(OrderEvent.RemoveFromCart(item))
+                                    }
+                                )
+                            }
 
-        }
+                            item {
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+
