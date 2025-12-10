@@ -778,7 +778,7 @@ fun DetailedProductCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Indicador de disponibilidad sutil
+
                 if (product.disponible) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -804,16 +804,3 @@ fun DetailedProductCard(
     }
 }
 
-private fun getEmojiForCategory(categoria: String): String {
-    return when (categoria.lowercase()) {
-        "cafe", "coffee", "café" -> "☕"
-        "te", "tea", "té" -> "🍵"
-        "postre", "dessert" -> "🍰"
-        "pasteleria", "pastry" -> "🥐"
-        "sandwich" -> "🥪"
-        "bebida", "drink" -> "🥤"
-        "helado", "ice cream" -> "🍦"
-        "jugo", "juice" -> "🧃"
-        else -> "🥐"
-    }
-}
