@@ -157,3 +157,33 @@ fun ProductDetailScreen(
                         )
                     }
 
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = "Personaliza tu bebida",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CoffeeSecondary
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = customization,
+                        onValueChange = { customization = it },
+                        placeholder = {
+                            Text(
+                                "Ej: Sin azúcar, leche de almendra...",
+                                color = GrayMedium
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = CoffeePrimary,
+                            unfocusedBorderColor = GrayLight,
+                            focusedContainerColor = CreamBackground,
+                            unfocusedContainerColor = CreamBackground
+                        ),
+                        minLines = 2
+                    )
+
