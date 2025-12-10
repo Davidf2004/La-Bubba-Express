@@ -21,4 +21,12 @@ class OrderViewModel @Inject constructor(
     private val _state = MutableStateFlow(OrderState())
     val state: StateFlow<OrderState> = _state.asStateFlow()
 
-}
+    fun onEvent(event: OrderEvent) {
+        when (event) {
+            is OrderEvent.AddToCart -> addToCart(event.product)
+            is OrderEvent.RemoveFromCart -> removeFromCart(event.item)
+            is OrderEvent.UpdateQuantity -> updateQuantity(event.item, event.newQuantity)
+            is OrderEvent.ConfirmOrder -> confirmOrder(event.usuarioId)
+            is OrderEvent.ClearCart -> clearCart()
+        }
+    }
