@@ -102,19 +102,18 @@ fun LoginScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
             TextButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClick = onNavigateToRegister
             ) {
-
                 Text(
                     "¿No tienes cuenta? Regístrate aquí",
                     color = CoffeeAccent,
                     style = MaterialTheme.typography.bodyMedium
                 )
-
             }
+
+
         }
     }
 }
