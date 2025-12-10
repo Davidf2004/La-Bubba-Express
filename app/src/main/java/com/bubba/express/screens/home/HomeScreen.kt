@@ -50,12 +50,12 @@ fun HomeScreen(
     var showProfileMenu by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
-
+    // Obtener categorías únicas
     val categories = remember(state.products) {
         state.products.map { it.categoria }.distinct()
     }
 
-
+    // Filtrar productos por categoría
     val filteredProducts = remember(state.products, selectedCategory) {
         if (selectedCategory == null) {
             state.products
@@ -89,7 +89,7 @@ fun HomeScreen(
                     containerColor = WhitePure
                 ),
                 actions = {
-
+                    // Carrito mejorado con animación
                     IconButton(
                         onClick = onCartClick,
                         modifier = Modifier.padding(end = 4.dp)
@@ -778,7 +778,7 @@ fun DetailedProductCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-
+                // Indicador de disponibilidad sutil
                 if (product.disponible) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -804,3 +804,16 @@ fun DetailedProductCard(
     }
 }
 
+private fun getEmojiForCategory(categoria: String): String {
+    return when (categoria.lowercase()) {
+        "cafe", "coffee", "café" -> "☕"
+        "te", "tea", "té" -> "🍵"
+        "postre", "dessert" -> "🍰"
+        "pasteleria", "pastry" -> "🥐"
+        "sandwich" -> "🥪"
+        "bebida", "drink" -> "🥤"
+        "helado", "ice cream" -> "🍦"
+        "jugo", "juice" -> "🧃"
+        else -> "🥐"
+    }
+}
