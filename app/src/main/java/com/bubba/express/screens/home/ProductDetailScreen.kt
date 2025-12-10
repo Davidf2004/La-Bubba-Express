@@ -53,3 +53,31 @@ fun ProductDetailScreen(
         },
         containerColor = CreamBackground
     ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+                    .background(WhitePure),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(200.dp)
+                        .clip(CircleShape)
+                        .background(CreamBackground),
+                    contentAlignment = Alignment.Center
+                ) {
+                    product.categoria?.let {
+                        Text(
+                            text = getEmojiForCategory(it),
+                            fontSize = 120.sp
+                        )
+                    }
+                }
+            }
