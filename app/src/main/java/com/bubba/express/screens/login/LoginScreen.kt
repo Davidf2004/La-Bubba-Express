@@ -2,6 +2,7 @@ package com.bubba.express.screens.login
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -13,7 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bubba.express.ui.theme.CoffeeAccent
 import com.bubba.express.ui.theme.CoffeePrimary
+import com.bubba.express.ui.theme.ErrorRed
+import com.bubba.express.ui.theme.WhitePure
 
 @Composable
 fun LoginScreen(
@@ -34,7 +38,8 @@ fun LoginScreen(
                 .padding(padding)
                 .padding(32.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
         //nuevo titulo
             Text(
@@ -44,7 +49,7 @@ fun LoginScreen(
             )
 
             Spacer(modifier = Modifier.height(32.dp))
-
+            // Campo de correo
             LoginTextField(
                 value = state.email,
                 onValueChange = { viewModel.onEvent(LoginEvent.EmailChanged(it)) },
@@ -72,11 +77,29 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            PrimaryButton(
-                text = "Iniciar Sesión",
-                loading = state.isLoading,
-                onClick = { viewModel.onEvent(LoginEvent.Submit) }
-            )
+            Button(
+                onClick = { viewModel.onEvent(LoginEvent.Submit) },
+                enabled = !state.isLoading,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CoffeePrimary,
+                    contentColor = WhitePure
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        color = WhitePure,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(20.dp)
+                    )
+                } else {
+                    Text(
+                        text = "Iniciar Sesión",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -84,7 +107,13 @@ fun LoginScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClick = onNavigateToRegister
             ) {
-                Text("¿No tienes cuenta? Regístrate aquí")
+
+                Text(
+                    "¿No tienes cuenta? Regístrate aquí",
+                    color = CoffeeAccent,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
             }
         }
     }
