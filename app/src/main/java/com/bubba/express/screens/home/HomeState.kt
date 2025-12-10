@@ -9,4 +9,5 @@ data class HomeState(
     val currentUser: User? = null,
     val cartItemCount: Int = 0,
     val error: String? = null
+
 )
