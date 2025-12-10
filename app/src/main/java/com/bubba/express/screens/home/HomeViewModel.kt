@@ -71,3 +71,7 @@ class HomeViewModel @Inject constructor(
         _state.update { it.copy(currentUser = user) }
     }
 
+    fun updateCartCount(count: Int) {
+        _state.update { it.copy(cartItemCount = count) }
+    }
+}
