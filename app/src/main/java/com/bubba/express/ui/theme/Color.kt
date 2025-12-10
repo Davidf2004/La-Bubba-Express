@@ -22,3 +22,10 @@ val GrayMedium = Color(0xFF757575)
 val GrayDark = Color(0xFF424242)
 val Black = Color(0xFF1A1A1A)
 
+
+val BrownWarm = Color(0xFF6F4E37)
+val BrownLight = Color(0xFFA67B5B)
+
+// Colores de estado
+val ErrorRed = Color(0xFFD32F2F)
+val SuccessGreen = Color(0xFF00704A)
