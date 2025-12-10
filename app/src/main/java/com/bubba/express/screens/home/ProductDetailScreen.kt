@@ -81,3 +81,79 @@ fun ProductDetailScreen(
                     }
                 }
             }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = WhitePure
+                ),
+                elevation = CardDefaults.cardElevation(2.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = product.nombre,
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Black,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        Surface(
+                            color = CoffeePrimary,
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "$${String.format("%.2f", product.precio)}",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = WhitePure,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Surface(
+                        color = CoffeePrimary.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        product.categoria?.let {
+                            Text(
+                                text = it,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = CoffeePrimary,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Descripción",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CoffeeSecondary
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    product.descripcion?.let {
+                        Text(
+                            text = it,
+                            fontSize = 14.sp,
+                            color = GrayDark,
+                            lineHeight = 20.sp
+                        )
+                    }
+
