@@ -15,4 +15,33 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val productRepository : ProductRepository
-) : ViewModel()
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(HomeState())
+    val state: StateFlow<HomeState> = _state.asStateFlow()
+
+    init {
+        loadProducts()
+    }
+
+    fun onEvent(event: HomeEvent) {
+        when (event) {
+            is HomeEvent.LoadProducts -> loadProducts()
+            is HomeEvent.OnProductClick -> {
+
+            }
+            is HomeEvent.OnCartClick -> {
+
+            }
+            is HomeEvent.OnProfileClick -> {
+
+            }
+            is HomeEvent.OnLogoutClick -> {
+
+            }
+            is HomeEvent.OnHistoryClick -> {
+
+            }
+        }
+    }
+
