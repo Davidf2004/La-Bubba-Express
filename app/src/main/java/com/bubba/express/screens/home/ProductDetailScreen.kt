@@ -187,3 +187,41 @@ fun ProductDetailScreen(
                         minLines = 2
                     )
 
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { onAddToCart(customization) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CoffeePrimary
+                        ),
+                        enabled = product.disponible
+                    ) {
+                        Text(
+                            text = if (product.disponible) "Agregar al Carrito" else "No Disponible",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+private fun getEmojiForCategory(categoria: String): String {
+    return when (categoria.lowercase()) {
+        "cafe", "coffee", "café" -> "☕"
+        "te", "tea", "té" -> "🍵"
+        "postre", "dessert" -> "🍰"
+        "pasteleria", "pastry" -> "🥐"
+        "sandwich" -> "🥪"
+        "bebida", "drink" -> "🥤"
+        else -> "☕"
+    }
+}
