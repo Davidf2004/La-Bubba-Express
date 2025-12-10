@@ -77,4 +77,44 @@ class OrderViewModel @Inject constructor(
             }
         }
     }
+
+    private fun confirmOrder(usuarioId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            try {
+                val productos = _state.value.cartItems.map { cartItem ->
+                    Pair(cartItem.product.id, cartItem.cantidad)
+                }
+
+                val order = orderRepository.createOrder(usuarioId, productos)
+
+                _state.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        confirmedOrder = order,
+                        cartItems = emptyList()
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Error al confirmar pedido"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun clearCart() {
+        _state.update {
+            it.copy(
+                cartItems = emptyList(),
+                confirmedOrder = null,
+                error = null
+            )
+        }
+    }
+
+    fun getCartItemCount(): Int = _state.value.cartItems.size
 }
