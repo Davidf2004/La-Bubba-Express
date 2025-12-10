@@ -110,7 +110,6 @@ fun OrderSummaryScreen(
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        // Lista de items
                         LazyColumn(
                             modifier = Modifier
                                 .weight(1f)
@@ -134,7 +133,6 @@ fun OrderSummaryScreen(
                             }
                         }
 
-                        // Footer con total
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
@@ -215,7 +213,6 @@ fun OrderSummaryScreen(
                 }
             }
 
-            // Mostrar error si existe
             state.error?.let { error ->
                 Snackbar(
                     modifier = Modifier
