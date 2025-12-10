@@ -45,3 +45,29 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun loadProducts() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            try {
+                val products = productRepository.getProducts()
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        products = products
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Error al cargar productos"
+                    )
+                }
+            }
+        }
+    }
+
+    fun setCurrentUser(user: User) {
+        _state.update { it.copy(currentUser = user) }
+    }
+
