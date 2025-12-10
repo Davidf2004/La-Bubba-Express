@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bubba.express.ui.theme.CoffeePrimary
 
 @Composable
 fun LoginScreen(
@@ -35,10 +36,11 @@ fun LoginScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
-
+        //nuevo titulo
             Text(
                 text = "Bienvenido a\nLa Bubba Express",
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium,
+                color = CoffeePrimary
             )
 
             Spacer(modifier = Modifier.height(32.dp))
